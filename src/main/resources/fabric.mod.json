@@ -3,12 +3,23 @@
   "id": "uuidcommand",
   "version": "${version}",
   "name": "UUID Command",
-  "description": "",
-  "authors": [],
-  "contact": {},
-  "license": "GPL-3.0",
+  "description": "Adds a /uuid command to Minecraft",
+  "authors": [
+    {
+      "name": "eclipseisoffline",
+      "contact": {
+        "homepage": "https://github.com/eclipseisoffline"
+      }
+    }
+  ],
+  "contact": {
+    "homepage": "https://github.com/eclipseisoffline/uuidcommand",
+    "issues": "https://github.com/eclipseisoffline/uuidcommand/issues",
+    "sources": "https://github.com/eclipseisoffline/uuidcommand"
+  },
+  "license": "GPLv3",
   "icon": "assets/uuidcommand/icon.png",
-  "environment": "*",
+  "environment": "client",
   "entrypoints": {
     "client": [
       "xyz.eclipseisoffline.uuidcommand.UUIDCommand"
