@@ -6,7 +6,10 @@
   "mixins": [],
   "client": [
     "ClientWorldMixin",
-    "EntitySelectorMixin"
+    "EntityArgumentTypeMixin",
+    "EntityMixin",
+    "EntitySelectorAccessor",
+    "PlayerListEntryMixin"
   ],
   "injectors": {
     "defaultRequire": 1
