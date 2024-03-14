@@ -19,7 +19,7 @@
   },
   "license": "GPLv3",
   "icon": "assets/uuidcommand/icon.png",
-  "environment": "client",
+  "environment": "*",
   "entrypoints": {
     "client": [
       "xyz.eclipseisoffline.uuidcommand.UUIDCommand"

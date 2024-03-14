@@ -1,4 +1,4 @@
-# UUID command
+# UUID Command
 
 This mod adds a simple `/uuid` command that shows the UUID of any entity currently loaded,
 and allows you to copy the UUID string or the NBT data representation of the UUID.
@@ -11,7 +11,7 @@ This mod is licensed under GNU GPLv3.
 
 ## Usage
 
-This mod is currently in development.
+Mod builds can be found [here](https://github.com/eclipseisoffline/uuidcommand/packages/2098177).
 
 This mod is currently available for Minecraft 1.20.4 (Fabric loader 0.15.7 or above).
 Version port requests can be made at the issue tracker. The Fabric API is required. 
