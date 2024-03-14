@@ -110,6 +110,7 @@ public class ClientEntitySelector extends EntitySelector {
     }
 
     private void checkSourcePermission(FabricClientCommandSource source) throws CommandSyntaxException {
+        // Always able to use @ selectors
         if (((EntitySelectorAccessor) this).getUsesAt() && !source.hasPermissionLevel(0)) {
             throw EntityArgumentType.NOT_ALLOWED_EXCEPTION.create();
         }

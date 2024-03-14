@@ -3,11 +3,12 @@
   "minVersion": "0.8",
   "package": "xyz.eclipseisoffline.uuidcommand.mixin",
   "compatibilityLevel": "JAVA_17",
-  "mixins": [],
+  "mixins": [
+    "EntityMixin"
+  ],
   "client": [
     "ClientWorldMixin",
     "EntityArgumentTypeMixin",
-    "EntityMixin",
     "EntitySelectorAccessor",
     "PlayerListEntryMixin"
   ],

@@ -24,7 +24,9 @@
     "client": [
       "xyz.eclipseisoffline.uuidcommand.UUIDCommand"
     ],
-    "main": []
+    "main": [
+      "xyz.eclipseisoffline.uuidcommand.UUIDCommand"
+    ]
   },
   "mixins": [
     "uuidcommand.mixins.json"
