@@ -13,7 +13,7 @@ This mod is licensed under GNU GPLv3.
 
 Mod builds can be found [here](https://github.com/eclipseisoffline/uuidcommand/packages/2098177).
 
-This mod is currently available for Minecraft 1.20.4 (Fabric loader 0.15.7 or above).
+This mod is currently available for Minecraft 1.20.5 and 1.20.4 (no longer updated), Fabric loader 0.15.10 or above.
 Version port requests can be made at the issue tracker. The Fabric API is required. 
 This mod is both supported on the server and on the client:
 
