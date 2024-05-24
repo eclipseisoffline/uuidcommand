@@ -13,7 +13,7 @@
     }
   ],
   "contact": {
-    "homepage": "https://github.com/eclipseisoffline/uuidcommand",
+    "homepage": "https://modrinth.com/mod/uuid-command",
     "issues": "https://github.com/eclipseisoffline/uuidcommand/issues",
     "sources": "https://github.com/eclipseisoffline/uuidcommand"
   },
@@ -35,5 +35,14 @@
     "fabricloader": ">=${loader_version}",
     "fabric": "*",
     "minecraft": "${supported_versions}"
+  },
+  "custom": {
+    "modmenu": {
+      "links": {
+        "modmenu.donate": "https://ko-fi.com/eclipseisoffline",
+        "modmenu.kofi": "https://ko-fi.com/eclipseisoffline",
+        "modmenu.modrinth": "https://modrinth.com/mod/uuid-command"
+      }
+    }
   }
 }
