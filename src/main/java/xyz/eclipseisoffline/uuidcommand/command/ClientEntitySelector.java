@@ -2,6 +2,7 @@ package xyz.eclipseisoffline.uuidcommand.command;
 
 import com.google.common.collect.Lists;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -14,6 +15,7 @@ import net.minecraft.command.EntitySelector;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import xyz.eclipseisoffline.uuidcommand.ClientWorldEntityCollector;
 import xyz.eclipseisoffline.uuidcommand.UUIDHolder;
@@ -23,7 +25,7 @@ public class ClientEntitySelector extends EntitySelector {
 
     public ClientEntitySelector(EntitySelector selector) {
         super(selector.getLimit(), selector.includesNonPlayers(), true,
-                ((EntitySelectorAccessor) selector).getBasePredicate(),
+                ((EntitySelectorAccessor) selector).getPredicates(),
                 ((EntitySelectorAccessor) selector).getDistance(),
                 ((EntitySelectorAccessor) selector).getPositionOffset(),
                 ((EntitySelectorAccessor) selector).getBox(),
@@ -97,14 +99,14 @@ public class ClientEntitySelector extends EntitySelector {
         }
 
         Vec3d vec3d = ((EntitySelectorAccessor) this).getPositionOffset().apply(source.getPosition());
-        Predicate<Entity> predicate = ((EntitySelectorAccessor) this).invokeGetPositionPredicate(vec3d);
+        Box box = ((EntitySelectorAccessor) this).invokeGetOffsetBox(vec3d);
+        Predicate<Entity> predicate;
         if (((EntitySelectorAccessor) this).getSenderOnly()) {
-            if (source.getEntity() != null && predicate.test(source.getEntity())) {
-                return Lists.newArrayList(source.getEntity());
-            }
-            return Collections.emptyList();
+            predicate = ((EntitySelectorAccessor) this).invokeGetPositionPredicate(vec3d, box, null);
+            return source.getEntity() != null && predicate.test(source.getEntity()) ? List.of(source.getEntity()) : List.of();
         }
-        ArrayList<Entity> list = Lists.newArrayList();
+        predicate = ((EntitySelectorAccessor) this).invokeGetPositionPredicate(vec3d, box, source.getEnabledFeatures());
+        List<Entity> list = new ObjectArrayList<>();
         appendEntitiesFromClientWorld(list, source.getWorld(), vec3d, predicate);
         return ((EntitySelectorAccessor) this).invokeGetEntities(vec3d, list);
     }
