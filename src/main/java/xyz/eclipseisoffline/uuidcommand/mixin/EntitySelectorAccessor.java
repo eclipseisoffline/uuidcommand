@@ -8,9 +8,11 @@ import java.util.function.Predicate;
 import net.minecraft.command.EntitySelector;
 import net.minecraft.entity.Entity;
 import net.minecraft.predicate.NumberRange;
+import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.util.TypeFilter;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.gen.Invoker;
@@ -24,7 +26,7 @@ public interface EntitySelectorAccessor {
     }
 
     @Accessor
-    Predicate<Entity> getBasePredicate();
+    List<Predicate<Entity>> getPredicates();
 
     @Accessor
     NumberRange.DoubleRange getDistance();
@@ -57,7 +59,10 @@ public interface EntitySelectorAccessor {
     <T extends Entity> List<T> invokeGetEntities(Vec3d pos, List<T> entities);
 
     @Invoker
-    Predicate<Entity> invokeGetPositionPredicate(Vec3d pos);
+    Box invokeGetOffsetBox(Vec3d offset);
+
+    @Invoker
+    Predicate<Entity> invokeGetPositionPredicate(Vec3d pos, @Nullable Box box, @Nullable FeatureSet enabledFeatures);
 
     @Invoker
     int invokeGetAppendLimit();
