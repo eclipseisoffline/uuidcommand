@@ -17,7 +17,7 @@
     "issues": "https://github.com/eclipseisoffline/uuidcommand/issues",
     "sources": "https://github.com/eclipseisoffline/uuidcommand"
   },
-  "license": "GPLv3",
+  "license": "LGPL-3.0-only",
   "icon": "assets/uuidcommand/icon.png",
   "environment": "*",
   "entrypoints": {
