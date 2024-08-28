@@ -33,14 +33,14 @@
   ],
   "depends": {
     "fabricloader": ">=${loader_version}",
-    "fabric": "*",
+    "fabric-api": "*",
     "minecraft": "${supported_versions}"
   },
   "custom": {
     "modmenu": {
       "links": {
-        "modmenu.donate": "https://ko-fi.com/eclipseisoffline",
-        "modmenu.kofi": "https://ko-fi.com/eclipseisoffline",
+        "modmenu.donate": "https://buymeacoffee.com/eclipseisoffline",
+        "modmenu.buymeacoffee": "https://buymeacoffee.com/eclipseisoffline",
         "modmenu.modrinth": "https://modrinth.com/mod/uuid-command"
       }
     }

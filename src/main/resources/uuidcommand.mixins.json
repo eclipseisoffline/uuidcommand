@@ -8,8 +8,8 @@
   ],
   "client": [
     "ClientWorldMixin",
-    "EntityArgumentTypeMixin",
     "EntitySelectorAccessor",
+    "EntitySelectorReaderMixin",
     "PlayerListEntryMixin"
   ],
   "injectors": {
