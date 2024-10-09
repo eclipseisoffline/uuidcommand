@@ -17,7 +17,7 @@ This mod is licensed under GNU LGPLv3.
 
 Mod builds can be found [here](https://github.com/eclipseisoffline/uuidcommand/packages/2098177) and on [Modrinth](https://modrinth.com/mod/uuid-command).
 
-This mod is currently available for Minecraft 1.21.1 and 1.21/1.20.5+6/1.20.4 (no longer updated), Fabric loader 0.16.3 or above.
+This mod is currently available for Minecraft 1.21.2, 1.21+1 and 1.20.5+6/1.20.4 (no longer updated), Fabric loader 0.16.5 or above.
 Version port requests can be made at the issue tracker. The Fabric API is required. 
 This mod is both supported on the server and on the client:
 
