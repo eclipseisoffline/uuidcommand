@@ -7,12 +7,15 @@ import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallba
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.minecraft.command.EntitySelector;
 import net.minecraft.command.argument.EntityArgumentType;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
+import net.minecraft.util.Uuids;
 import xyz.eclipseisoffline.uuidcommand.command.ClientEntitySelector;
 
 public class UUIDCommand implements ModInitializer, ClientModInitializer {
@@ -51,20 +54,19 @@ public class UUIDCommand implements ModInitializer, ClientModInitializer {
     }
 
     private Text uuidCommand(UUIDHolder uuid) {
+        NbtElement uuidNbt = Uuids.INT_STREAM_CODEC.encodeStart(NbtOps.INSTANCE, uuid.UUIDCommand$getUUID()).getOrThrow();
+
         MutableText feedback = Text.literal("The uuid of ");
         feedback.append(uuid.UUIDCommand$getName());
         feedback.append(Text.literal(" is "));
         feedback.append(Text.literal(uuid.UUIDCommand$getUUID().toString())
                 .styled(style -> style
                         .withUnderline(true)
-                        .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-                                Text.of("Click to copy the UUID string to your clipboard")))
-                        .withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, uuid.UUIDCommand$getUUID().toString()))));
+                        .withHoverEvent(new HoverEvent.ShowText(Text.of("Click to copy the UUID string to your clipboard")))
+                        .withClickEvent(new ClickEvent.CopyToClipboard(uuid.UUIDCommand$getUUID().toString()))));
         feedback.append(Text.literal(" [copy data]").styled(style -> style
-                .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-                        Text.of("Click to copy the UUID data element to your clipboard")))
-                .withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD,
-                        NbtHelper.toPrettyPrintedText(NbtHelper.fromUuid(uuid.UUIDCommand$getUUID())).getString()))));
+                .withHoverEvent(new HoverEvent.ShowText(Text.of("Click to copy the UUID data element to your clipboard")))
+                .withClickEvent(new ClickEvent.CopyToClipboard(NbtHelper.toPrettyPrintedText(uuidNbt).getString()))));
 
         return feedback;
     }
