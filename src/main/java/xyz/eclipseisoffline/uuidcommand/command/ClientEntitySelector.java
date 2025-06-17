@@ -46,10 +46,10 @@ public class ClientEntitySelector extends EntitySelector {
         if (list.size() > 1) {
             throw EntityArgumentType.TOO_MANY_ENTITIES_EXCEPTION.create();
         }
-        return list.get(0);
+        return list.getFirst();
     }
 
-    public List<UUIDHolder> getClientEntities(FabricClientCommandSource source) throws CommandSyntaxException {
+    public List<UUIDHolder> getClientEntities(FabricClientCommandSource source) {
         List<UUIDHolder> entities = new ArrayList<>(getUnfilteredClientEntities(source).stream()
                 .filter(entity -> entity.getType().isEnabled(source.getEnabledFeatures()))
                 .map(entity -> (UUIDHolder) entity)
@@ -77,11 +77,9 @@ public class ClientEntitySelector extends EntitySelector {
         return Collections.emptyList();
     }
 
-    private List<? extends Entity> getUnfilteredClientEntities(FabricClientCommandSource source)
-            throws CommandSyntaxException {
+    private List<? extends Entity> getUnfilteredClientEntities(FabricClientCommandSource source) {
         // Not implemented from server side: player-only selectors
         // Discarded local world check, since localWordOnly is always true
-        checkSourcePermission(source);
         if (((EntitySelectorAccessor) this).getPlayerName() != null) {
             for (AbstractClientPlayerEntity player : source.getWorld().getPlayers()) {
                 if (player.getGameProfile().getName().equals(((EntitySelectorAccessor) this).getPlayerName())) {
@@ -109,13 +107,6 @@ public class ClientEntitySelector extends EntitySelector {
         List<Entity> list = new ObjectArrayList<>();
         appendEntitiesFromClientWorld(list, source.getWorld(), vec3d, predicate);
         return ((EntitySelectorAccessor) this).invokeGetEntities(vec3d, list);
-    }
-
-    private void checkSourcePermission(FabricClientCommandSource source) throws CommandSyntaxException {
-        // Always able to use @ selectors
-        if (((EntitySelectorAccessor) this).getUsesAt() && !source.hasPermissionLevel(0)) {
-            throw EntityArgumentType.NOT_ALLOWED_EXCEPTION.create();
-        }
     }
 
     private void appendEntitiesFromClientWorld(List<Entity> entities, ClientWorld world,
