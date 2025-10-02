@@ -82,7 +82,7 @@ public class ClientEntitySelector extends EntitySelector {
         // Discarded local world check, since localWordOnly is always true
         if (((EntitySelectorAccessor) this).getPlayerName() != null) {
             for (AbstractClientPlayerEntity player : source.getWorld().getPlayers()) {
-                if (player.getGameProfile().getName().equals(((EntitySelectorAccessor) this).getPlayerName())) {
+                if (player.getGameProfile().name().equals(((EntitySelectorAccessor) this).getPlayerName())) {
                     return Lists.newArrayList(player);
                 }
             }

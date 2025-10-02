@@ -18,7 +18,7 @@ public abstract class PlayerListEntryMixin implements UUIDHolder {
 
     @Override
     public UUID UUIDCommand$getUUID() {
-        return getProfile().getId();
+        return getProfile().id();
     }
 
     @Override
@@ -28,6 +28,6 @@ public abstract class PlayerListEntryMixin implements UUIDHolder {
             return getDisplayName();
         }
 
-        return Text.of(getProfile().getName());
+        return Text.of(getProfile().name());
     }
 }
