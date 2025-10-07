@@ -20,7 +20,7 @@ This mod is licensed under GNU LGPLv3.
 
 | Minecraft Version | Status       |
 |-------------------|--------------|
-| 1.21.9            | ✅ Current    |
+| 1.21.9+10         | ✅ Current    |
 | 1.21.6+7+8        | ✔️ Available |
 | 1.21.5            | ✔️ Available |
 | 1.21.2            | ✔️ Available |
