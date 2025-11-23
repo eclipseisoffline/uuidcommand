@@ -41,7 +41,7 @@ public class UUIDCommand implements ModInitializer, ClientModInitializer {
     public void onInitialize() {
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> dispatcher.register(
                 Commands.literal("uuid")
-                        .requires(source -> source.hasPermission(2))
+                        .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
                         .then(Commands.argument("entity", EntityArgument.entity())
                                 .executes(context -> {
                                     UUIDHolder entity = (UUIDHolder) EntityArgument.getEntity(context, "entity");
