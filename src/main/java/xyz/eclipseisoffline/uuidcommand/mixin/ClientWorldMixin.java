@@ -2,32 +2,32 @@ package xyz.eclipseisoffline.uuidcommand.mixin;
 
 import java.util.List;
 import java.util.function.Predicate;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.TypeFilter;
-import net.minecraft.util.function.LazyIterationConsumer;
-import net.minecraft.world.entity.EntityLookup;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.util.AbortableIterationConsumer;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.entity.EntityTypeTest;
+import net.minecraft.world.level.entity.LevelEntityGetter;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import xyz.eclipseisoffline.uuidcommand.ClientWorldEntityCollector;
 
-@Mixin(ClientWorld.class)
+@Mixin(ClientLevel.class)
 public abstract class ClientWorldMixin implements ClientWorldEntityCollector {
 
 
-    @Shadow protected abstract EntityLookup<Entity> getEntityLookup();
+    @Shadow protected abstract LevelEntityGetter<Entity> getEntities();
 
     @Override
-    public <T extends Entity> void UUIDCommand$collectEntitiesByType(TypeFilter<Entity, T> filter,
+    public <T extends Entity> void UUIDCommand$collectEntitiesByType(EntityTypeTest<Entity, T> filter,
             Predicate<? super T> predicate, List<? super T> result, int limit) {
-        getEntityLookup().forEach(filter, entity -> {
+        getEntities().get(filter, entity -> {
             if (predicate.test(entity)) {
                 result.add(entity);
                 if (result.size() >= limit) {
-                    return LazyIterationConsumer.NextIteration.ABORT;
+                    return AbortableIterationConsumer.Continuation.ABORT;
                 }
             }
-            return LazyIterationConsumer.NextIteration.CONTINUE;
+            return AbortableIterationConsumer.Continuation.CONTINUE;
         });
     }
 }

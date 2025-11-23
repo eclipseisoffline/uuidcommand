@@ -1,8 +1,8 @@
 package xyz.eclipseisoffline.uuidcommand.mixin;
 
 import java.util.UUID;
-import net.minecraft.entity.Entity;
-import net.minecraft.text.Text;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.Entity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import xyz.eclipseisoffline.uuidcommand.UUIDHolder;
@@ -12,7 +12,7 @@ public abstract class EntityMixin implements UUIDHolder {
 
     @Shadow protected UUID uuid;
 
-    @Shadow public abstract Text getDisplayName();
+    @Shadow public abstract Component getDisplayName();
 
     @Override
     public UUID UUIDCommand$getUUID() {
@@ -20,7 +20,7 @@ public abstract class EntityMixin implements UUIDHolder {
     }
 
     @Override
-    public Text UUIDCommand$getName() {
+    public Component UUIDCommand$getName() {
         return getDisplayName();
     }
 }

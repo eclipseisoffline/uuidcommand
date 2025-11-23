@@ -8,15 +8,15 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Predicate;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
-import net.minecraft.client.network.AbstractClientPlayerEntity;
-import net.minecraft.client.network.PlayerListEntry;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.command.EntitySelector;
-import net.minecraft.command.argument.EntityArgumentType;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.multiplayer.PlayerInfo;
+import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.commands.arguments.EntityArgument;
+import net.minecraft.commands.arguments.selector.EntitySelector;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 import xyz.eclipseisoffline.uuidcommand.ClientWorldEntityCollector;
 import xyz.eclipseisoffline.uuidcommand.UUIDHolder;
 import xyz.eclipseisoffline.uuidcommand.mixin.EntitySelectorAccessor;
@@ -24,34 +24,34 @@ import xyz.eclipseisoffline.uuidcommand.mixin.EntitySelectorAccessor;
 public class ClientEntitySelector extends EntitySelector {
 
     public ClientEntitySelector(EntitySelector selector) {
-        super(selector.getLimit(), selector.includesNonPlayers(), true,
-                ((EntitySelectorAccessor) selector).getPredicates(),
-                ((EntitySelectorAccessor) selector).getDistance(),
-                ((EntitySelectorAccessor) selector).getPositionOffset(),
-                ((EntitySelectorAccessor) selector).getBox(),
-                ((EntitySelectorAccessor) selector).getSorter(),
-                ((EntitySelectorAccessor) selector).getSenderOnly(),
+        super(selector.getMaxResults(), selector.includesEntities(), true,
+                ((EntitySelectorAccessor) selector).getContextFreePredicates(),
+                ((EntitySelectorAccessor) selector).getRange(),
+                ((EntitySelectorAccessor) selector).getPosition(),
+                ((EntitySelectorAccessor) selector).getAabb(),
+                ((EntitySelectorAccessor) selector).getOrder(),
+                ((EntitySelectorAccessor) selector).getCurrentEntity(),
                 ((EntitySelectorAccessor) selector).getPlayerName(),
-                ((EntitySelectorAccessor) selector).getUuid(),
-                ((EntitySelectorAccessor) selector).getEntityFilter() == EntitySelectorAccessor.getPassthroughFilter()
-                        ? null : (EntityType<?>) ((EntitySelectorAccessor) selector).getEntityFilter(),
-                ((EntitySelectorAccessor) selector).getUsesAt());
+                ((EntitySelectorAccessor) selector).getEntityUUID(),
+                ((EntitySelectorAccessor) selector).getType() == EntitySelectorAccessor.getAnyType()
+                        ? null : (EntityType<?>) ((EntitySelectorAccessor) selector).getType(),
+                ((EntitySelectorAccessor) selector).getUsesSelector());
     }
 
     public UUIDHolder getClientEntity(FabricClientCommandSource source) throws CommandSyntaxException {
         List<UUIDHolder> list = getClientEntities(source);
         if (list.isEmpty()) {
-            throw EntityArgumentType.ENTITY_NOT_FOUND_EXCEPTION.create();
+            throw EntityArgument.NO_ENTITIES_FOUND.create();
         }
         if (list.size() > 1) {
-            throw EntityArgumentType.TOO_MANY_ENTITIES_EXCEPTION.create();
+            throw EntityArgument.ERROR_NOT_SINGLE_ENTITY.create();
         }
         return list.getFirst();
     }
 
     public List<UUIDHolder> getClientEntities(FabricClientCommandSource source) {
         List<UUIDHolder> entities = new ArrayList<>(getUnfilteredClientEntities(source).stream()
-                .filter(entity -> entity.getType().isEnabled(source.getEnabledFeatures()))
+                .filter(entity -> entity.getType().isEnabled(source.enabledFeatures()))
                 .map(entity -> (UUIDHolder) entity)
                 .toList());
         if (entities.isEmpty()) {
@@ -60,14 +60,14 @@ public class ClientEntitySelector extends EntitySelector {
         return entities;
     }
 
-    private List<PlayerListEntry> getClientPlayerEntries(FabricClientCommandSource source) {
-        PlayerListEntry player = null;
+    private List<PlayerInfo> getClientPlayerEntries(FabricClientCommandSource source) {
+        PlayerInfo player = null;
 
-        assert source.getClient().getNetworkHandler() != null;
+        assert source.getClient().getConnection() != null;
         if (((EntitySelectorAccessor) this).getPlayerName() != null) {
-            player = source.getClient().getNetworkHandler().getPlayerListEntry(((EntitySelectorAccessor) this).getPlayerName());
-        } else if (((EntitySelectorAccessor) this).getUuid() != null) {
-            player = source.getClient().getNetworkHandler().getPlayerListEntry(((EntitySelectorAccessor) this).getUuid());
+            player = source.getClient().getConnection().getPlayerInfo(((EntitySelectorAccessor) this).getPlayerName());
+        } else if (((EntitySelectorAccessor) this).getEntityUUID() != null) {
+            player = source.getClient().getConnection().getPlayerInfo(((EntitySelectorAccessor) this).getEntityUUID());
         }
 
         if (player != null) {
@@ -81,44 +81,44 @@ public class ClientEntitySelector extends EntitySelector {
         // Not implemented from server side: player-only selectors
         // Discarded local world check, since localWordOnly is always true
         if (((EntitySelectorAccessor) this).getPlayerName() != null) {
-            for (AbstractClientPlayerEntity player : source.getWorld().getPlayers()) {
+            for (AbstractClientPlayer player : source.getWorld().players()) {
                 if (player.getGameProfile().name().equals(((EntitySelectorAccessor) this).getPlayerName())) {
                     return Lists.newArrayList(player);
                 }
             }
             return Collections.emptyList();
-        } else if (((EntitySelectorAccessor) this).getUuid() != null) {
-            for (Entity entity : source.getWorld().getEntities()) {
-                if (entity.getUuid().equals(((EntitySelectorAccessor) this).getUuid())) {
+        } else if (((EntitySelectorAccessor) this).getEntityUUID() != null) {
+            for (Entity entity : source.getWorld().entitiesForRendering()) {
+                if (entity.getUUID().equals(((EntitySelectorAccessor) this).getEntityUUID())) {
                     return Lists.newArrayList(entity);
                 }
             }
             return Collections.emptyList();
         }
 
-        Vec3d vec3d = ((EntitySelectorAccessor) this).getPositionOffset().apply(source.getPosition());
-        Box box = ((EntitySelectorAccessor) this).invokeGetOffsetBox(vec3d);
+        Vec3 vec3d = ((EntitySelectorAccessor) this).getPosition().apply(source.getPosition());
+        AABB box = ((EntitySelectorAccessor) this).invokeGetAbsoluteAabb(vec3d);
         Predicate<Entity> predicate;
-        if (((EntitySelectorAccessor) this).getSenderOnly()) {
-            predicate = ((EntitySelectorAccessor) this).invokeGetPositionPredicate(vec3d, box, null);
+        if (((EntitySelectorAccessor) this).getCurrentEntity()) {
+            predicate = ((EntitySelectorAccessor) this).invokeGetPredicate(vec3d, box, null);
             return source.getEntity() != null && predicate.test(source.getEntity()) ? List.of(source.getEntity()) : List.of();
         }
-        predicate = ((EntitySelectorAccessor) this).invokeGetPositionPredicate(vec3d, box, source.getEnabledFeatures());
+        predicate = ((EntitySelectorAccessor) this).invokeGetPredicate(vec3d, box, source.enabledFeatures());
         List<Entity> list = new ObjectArrayList<>();
         appendEntitiesFromClientWorld(list, source.getWorld(), vec3d, predicate);
-        return ((EntitySelectorAccessor) this).invokeGetEntities(vec3d, list);
+        return ((EntitySelectorAccessor) this).invokeSortAndLimit(vec3d, list);
     }
 
-    private void appendEntitiesFromClientWorld(List<Entity> entities, ClientWorld world,
-            Vec3d pos, Predicate<Entity> predicate) {
-        int i = ((EntitySelectorAccessor) this).invokeGetAppendLimit();
+    private void appendEntitiesFromClientWorld(List<Entity> entities, ClientLevel world,
+            Vec3 pos, Predicate<Entity> predicate) {
+        int i = ((EntitySelectorAccessor) this).invokeGetResultLimit();
         if (entities.size() >= i) {
             return;
         }
-        if (((EntitySelectorAccessor) this).getBox() != null) {
-            world.collectEntitiesByType(((EntitySelectorAccessor) this).getEntityFilter(), ((EntitySelectorAccessor) this).getBox().offset(pos), predicate, entities, i);
+        if (((EntitySelectorAccessor) this).getAabb() != null) {
+            world.getEntities(((EntitySelectorAccessor) this).getType(), ((EntitySelectorAccessor) this).getAabb().move(pos), predicate, entities, i);
         } else {
-            ((ClientWorldEntityCollector) world).UUIDCommand$collectEntitiesByType(((EntitySelectorAccessor) this).getEntityFilter(), predicate, entities, i);
+            ((ClientWorldEntityCollector) world).UUIDCommand$collectEntitiesByType(((EntitySelectorAccessor) this).getType(), predicate, entities, i);
         }
     }
 }

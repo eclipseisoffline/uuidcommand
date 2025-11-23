@@ -5,17 +5,17 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
-import net.minecraft.command.EntitySelector;
-import net.minecraft.command.argument.EntityArgumentType;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtHelper;
+import net.minecraft.commands.Commands;
+import net.minecraft.commands.arguments.EntityArgument;
+import net.minecraft.commands.arguments.selector.EntitySelector;
+import net.minecraft.core.UUIDUtil;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.server.command.CommandManager;
-import net.minecraft.text.ClickEvent;
-import net.minecraft.text.HoverEvent;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
-import net.minecraft.util.Uuids;
+import net.minecraft.nbt.NbtUtils;
+import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.ClickEvent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.HoverEvent;
+import net.minecraft.network.chat.MutableComponent;
 import xyz.eclipseisoffline.uuidcommand.command.ClientEntitySelector;
 
 public class UUIDCommand implements ModInitializer, ClientModInitializer {
@@ -24,13 +24,13 @@ public class UUIDCommand implements ModInitializer, ClientModInitializer {
     public void onInitializeClient() {
         ClientCommandRegistrationCallback.EVENT.register(((dispatcher, registryAccess) -> dispatcher.register(
                 ClientCommandManager.literal("uuid")
-                        .then(ClientCommandManager.argument("entity", EntityArgumentType.entity())
+                        .then(ClientCommandManager.argument("entity", EntityArgument.entity())
                                 .executes(context -> {
                                     ClientEntitySelector selector = new ClientEntitySelector(context.getArgument("entity", EntitySelector.class));
 
                                     UUIDHolder entity = selector.getClientEntity(context.getSource());
 
-                                    Text feedback = uuidCommand(entity);
+                                    Component feedback = uuidCommand(entity);
                                     context.getSource().sendFeedback(feedback);
                                     return 0;
                                 }))
@@ -40,33 +40,33 @@ public class UUIDCommand implements ModInitializer, ClientModInitializer {
     @Override
     public void onInitialize() {
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> dispatcher.register(
-                CommandManager.literal("uuid")
-                        .requires(source -> source.hasPermissionLevel(2))
-                        .then(CommandManager.argument("entity", EntityArgumentType.entity())
+                Commands.literal("uuid")
+                        .requires(source -> source.hasPermission(2))
+                        .then(Commands.argument("entity", EntityArgument.entity())
                                 .executes(context -> {
-                                    UUIDHolder entity = (UUIDHolder) EntityArgumentType.getEntity(context, "entity");
+                                    UUIDHolder entity = (UUIDHolder) EntityArgument.getEntity(context, "entity");
 
-                                    context.getSource().sendFeedback(() -> uuidCommand(entity), false);
+                                    context.getSource().sendSuccess(() -> uuidCommand(entity), false);
                                     return 0;
                                 })
                         )
         ));
     }
 
-    private Text uuidCommand(UUIDHolder uuid) {
-        NbtElement uuidNbt = Uuids.INT_STREAM_CODEC.encodeStart(NbtOps.INSTANCE, uuid.UUIDCommand$getUUID()).getOrThrow();
+    private Component uuidCommand(UUIDHolder uuid) {
+        Tag uuidNbt = UUIDUtil.CODEC.encodeStart(NbtOps.INSTANCE, uuid.UUIDCommand$getUUID()).getOrThrow();
 
-        MutableText feedback = Text.literal("The uuid of ");
+        MutableComponent feedback = Component.literal("The uuid of ");
         feedback.append(uuid.UUIDCommand$getName());
-        feedback.append(Text.literal(" is "));
-        feedback.append(Text.literal(uuid.UUIDCommand$getUUID().toString())
-                .styled(style -> style
-                        .withUnderline(true)
-                        .withHoverEvent(new HoverEvent.ShowText(Text.of("Click to copy the UUID string to your clipboard")))
+        feedback.append(Component.literal(" is "));
+        feedback.append(Component.literal(uuid.UUIDCommand$getUUID().toString())
+                .withStyle(style -> style
+                        .withUnderlined(true)
+                        .withHoverEvent(new HoverEvent.ShowText(Component.nullToEmpty("Click to copy the UUID string to your clipboard")))
                         .withClickEvent(new ClickEvent.CopyToClipboard(uuid.UUIDCommand$getUUID().toString()))));
-        feedback.append(Text.literal(" [copy data]").styled(style -> style
-                .withHoverEvent(new HoverEvent.ShowText(Text.of("Click to copy the UUID data element to your clipboard")))
-                .withClickEvent(new ClickEvent.CopyToClipboard(NbtHelper.toPrettyPrintedText(uuidNbt).getString()))));
+        feedback.append(Component.literal(" [copy data]").withStyle(style -> style
+                .withHoverEvent(new HoverEvent.ShowText(Component.nullToEmpty("Click to copy the UUID data element to your clipboard")))
+                .withClickEvent(new ClickEvent.CopyToClipboard(NbtUtils.toPrettyComponent(uuidNbt).getString()))));
 
         return feedback;
     }

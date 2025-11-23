@@ -5,13 +5,13 @@ import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import net.minecraft.command.EntitySelector;
-import net.minecraft.entity.Entity;
-import net.minecraft.predicate.NumberRange;
-import net.minecraft.resource.featuretoggle.FeatureSet;
-import net.minecraft.util.TypeFilter;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.advancements.critereon.MinMaxBounds;
+import net.minecraft.commands.arguments.selector.EntitySelector;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.flag.FeatureFlagSet;
+import net.minecraft.world.level.entity.EntityTypeTest;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
@@ -20,50 +20,50 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 @Mixin(EntitySelector.class)
 public interface EntitySelectorAccessor {
 
-    @Accessor("PASSTHROUGH_FILTER")
-    static TypeFilter<Entity, ?> getPassthroughFilter() {
+    @Accessor("ANY_TYPE")
+    static EntityTypeTest<Entity, ?> getAnyType() {
         throw new AssertionError();
     }
 
     @Accessor
-    List<Predicate<Entity>> getPredicates();
+    List<Predicate<Entity>> getContextFreePredicates();
 
     @Accessor
-    NumberRange.DoubleRange getDistance();
+    MinMaxBounds.Doubles getRange();
 
     @Accessor
     String getPlayerName();
 
     @Accessor
-    UUID getUuid();
+    UUID getEntityUUID();
 
     @Accessor
-    Function<Vec3d, Vec3d> getPositionOffset();
+    Function<Vec3, Vec3> getPosition();
 
     @Accessor
-    boolean getSenderOnly();
+    boolean getCurrentEntity();
 
     @Accessor
-    boolean getUsesAt();
+    boolean getUsesSelector();
 
     @Accessor
-    Box getBox();
+    AABB getAabb();
 
     @Accessor
-    BiConsumer<Vec3d, List<? extends Entity>> getSorter();
+    BiConsumer<Vec3, List<? extends Entity>> getOrder();
 
     @Accessor
-    TypeFilter<Entity, ?> getEntityFilter();
+    EntityTypeTest<Entity, ?> getType();
 
     @Invoker
-    <T extends Entity> List<T> invokeGetEntities(Vec3d pos, List<T> entities);
+    <T extends Entity> List<T> invokeSortAndLimit(Vec3 pos, List<T> entities);
 
     @Invoker
-    Box invokeGetOffsetBox(Vec3d offset);
+    AABB invokeGetAbsoluteAabb(Vec3 offset);
 
     @Invoker
-    Predicate<Entity> invokeGetPositionPredicate(Vec3d pos, @Nullable Box box, @Nullable FeatureSet enabledFeatures);
+    Predicate<Entity> invokeGetPredicate(Vec3 pos, @Nullable AABB box, @Nullable FeatureFlagSet enabledFeatures);
 
     @Invoker
-    int invokeGetAppendLimit();
+    int invokeGetResultLimit();
 }

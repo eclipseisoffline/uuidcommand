@@ -2,19 +2,19 @@ package xyz.eclipseisoffline.uuidcommand.mixin;
 
 import com.mojang.authlib.GameProfile;
 import java.util.UUID;
-import net.minecraft.client.network.PlayerListEntry;
-import net.minecraft.text.Text;
+import net.minecraft.client.multiplayer.PlayerInfo;
+import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import xyz.eclipseisoffline.uuidcommand.UUIDHolder;
 
-@Mixin(PlayerListEntry.class)
+@Mixin(PlayerInfo.class)
 public abstract class PlayerListEntryMixin implements UUIDHolder {
 
     @Shadow public abstract GameProfile getProfile();
 
-    @Shadow public abstract @Nullable Text getDisplayName();
+    @Shadow public abstract @Nullable Component getTabListDisplayName();
 
     @Override
     public UUID UUIDCommand$getUUID() {
@@ -22,12 +22,12 @@ public abstract class PlayerListEntryMixin implements UUIDHolder {
     }
 
     @Override
-    public Text UUIDCommand$getName() {
-        Text displayName = getDisplayName();
+    public Component UUIDCommand$getName() {
+        Component displayName = getTabListDisplayName();
         if (displayName != null) {
-            return getDisplayName();
+            return getTabListDisplayName();
         }
 
-        return Text.of(getProfile().name());
+        return Component.nullToEmpty(getProfile().name());
     }
 }
