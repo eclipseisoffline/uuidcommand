@@ -10,7 +10,7 @@
   "client": [
     "ClientLevelMixin",
     "EntitySelectorAccessor",
-    "EntitySelectorReaderMixin",
+    "EntitySelectorParserMixin",
     "PlayerInfoMixin"
   ],
   "injectors": {
