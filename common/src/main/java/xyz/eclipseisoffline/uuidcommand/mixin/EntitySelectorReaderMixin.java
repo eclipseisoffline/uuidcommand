@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(EntitySelectorParser.class)
 public class EntitySelectorReaderMixin {
 
-    @Inject(method = "allowSelectors", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "allowSelectors*", at = @At("HEAD"), cancellable = true)
     private static void alwaysAllowAtSelectors(Object source, CallbackInfoReturnable<Boolean> callbackInfoReturnable) {
         callbackInfoReturnable.setReturnValue(true);
     }

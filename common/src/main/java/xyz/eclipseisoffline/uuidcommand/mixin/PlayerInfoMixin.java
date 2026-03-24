@@ -4,17 +4,19 @@ import com.mojang.authlib.GameProfile;
 import java.util.UUID;
 import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.network.chat.Component;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import xyz.eclipseisoffline.uuidcommand.UUIDHolder;
 
 @Mixin(PlayerInfo.class)
-public abstract class PlayerListEntryMixin implements UUIDHolder {
+public abstract class PlayerInfoMixin implements UUIDHolder {
 
-    @Shadow public abstract GameProfile getProfile();
+    @Shadow
+    public abstract GameProfile getProfile();
 
-    @Shadow public abstract @Nullable Component getTabListDisplayName();
+    @Shadow
+    public abstract @Nullable Component getTabListDisplayName();
 
     @Override
     public UUID UUIDCommand$getUUID() {

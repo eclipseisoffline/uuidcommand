@@ -1,10 +1,5 @@
 package xyz.eclipseisoffline.uuidcommand.mixin;
 
-import java.util.List;
-import java.util.UUID;
-import java.util.function.BiConsumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
 import net.minecraft.advancements.criterion.MinMaxBounds;
 import net.minecraft.commands.arguments.selector.EntitySelector;
 import net.minecraft.world.entity.Entity;
@@ -12,10 +7,16 @@ import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.level.entity.EntityTypeTest;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.gen.Invoker;
+
+import java.util.List;
+import java.util.UUID;
+import java.util.function.BiConsumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 @Mixin(EntitySelector.class)
 public interface EntitySelectorAccessor {
@@ -29,13 +30,13 @@ public interface EntitySelectorAccessor {
     List<Predicate<Entity>> getContextFreePredicates();
 
     @Accessor
-    MinMaxBounds.Doubles getRange();
+    MinMaxBounds.@Nullable Doubles getRange();
 
     @Accessor
-    String getPlayerName();
+    @Nullable String getPlayerName();
 
     @Accessor
-    UUID getEntityUUID();
+    @Nullable UUID getEntityUUID();
 
     @Accessor
     Function<Vec3, Vec3> getPosition();
@@ -47,7 +48,7 @@ public interface EntitySelectorAccessor {
     boolean getUsesSelector();
 
     @Accessor
-    AABB getAabb();
+    @Nullable AABB getAabb();
 
     @Accessor
     BiConsumer<Vec3, List<? extends Entity>> getOrder();

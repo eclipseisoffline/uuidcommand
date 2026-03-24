@@ -10,9 +10,11 @@ import xyz.eclipseisoffline.uuidcommand.UUIDHolder;
 @Mixin(Entity.class)
 public abstract class EntityMixin implements UUIDHolder {
 
-    @Shadow protected UUID uuid;
+    @Shadow
+    protected UUID uuid;
 
-    @Shadow public abstract Component getDisplayName();
+    @Shadow
+    public abstract Component getDisplayName();
 
     @Override
     public UUID UUIDCommand$getUUID() {

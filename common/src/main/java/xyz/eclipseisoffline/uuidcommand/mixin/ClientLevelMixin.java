@@ -9,13 +9,13 @@ import net.minecraft.world.level.entity.EntityTypeTest;
 import net.minecraft.world.level.entity.LevelEntityGetter;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import xyz.eclipseisoffline.uuidcommand.ClientWorldEntityCollector;
+import xyz.eclipseisoffline.uuidcommand.ClientLevelEntityCollector;
 
 @Mixin(ClientLevel.class)
-public abstract class ClientWorldMixin implements ClientWorldEntityCollector {
+public abstract class ClientLevelMixin implements ClientLevelEntityCollector {
 
-
-    @Shadow protected abstract LevelEntityGetter<Entity> getEntities();
+    @Shadow
+    protected abstract LevelEntityGetter<Entity> getEntities();
 
     @Override
     public <T extends Entity> void UUIDCommand$collectEntitiesByType(EntityTypeTest<Entity, T> filter,

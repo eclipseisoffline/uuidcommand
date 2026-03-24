@@ -1,10 +1,11 @@
 package xyz.eclipseisoffline.uuidcommand;
 
-import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
-import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
-import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.ArgumentType;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.builder.RequiredArgumentBuilder;
+import net.minecraft.client.multiplayer.ClientSuggestionProvider;
+import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.arguments.selector.EntitySelector;
@@ -18,28 +19,12 @@ import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.MutableComponent;
 import xyz.eclipseisoffline.uuidcommand.command.ClientEntitySelector;
 
-public class UUIDCommand implements ModInitializer, ClientModInitializer {
+import java.util.function.Consumer;
 
-    @Override
-    public void onInitializeClient() {
-        ClientCommandRegistrationCallback.EVENT.register(((dispatcher, registryAccess) -> dispatcher.register(
-                ClientCommandManager.literal("uuid")
-                        .then(ClientCommandManager.argument("entity", EntityArgument.entity())
-                                .executes(context -> {
-                                    ClientEntitySelector selector = new ClientEntitySelector(context.getArgument("entity", EntitySelector.class));
+public abstract class UUIDCommand {
 
-                                    UUIDHolder entity = selector.getClientEntity(context.getSource());
-
-                                    Component feedback = uuidCommand(entity);
-                                    context.getSource().sendFeedback(feedback);
-                                    return 0;
-                                }))
-        )));
-    }
-
-    @Override
-    public void onInitialize() {
-        CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> dispatcher.register(
+    protected void initialize() {
+        registerCommands(dispatcher -> dispatcher.register(
                 Commands.literal("uuid")
                         .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
                         .then(Commands.argument("entity", EntityArgument.entity())
@@ -52,6 +37,29 @@ public class UUIDCommand implements ModInitializer, ClientModInitializer {
                         )
         ));
     }
+
+    protected void initializeClient() {
+        registerClientCommands(dispatcher -> dispatcher.register(
+                clientLiteral("uuid")
+                        .then(clientArgument("entity", EntityArgument.entity())
+                                .executes(context -> {
+                                    ClientEntitySelector selector = new ClientEntitySelector(context.getArgument("entity", EntitySelector.class));
+
+                                    UUIDHolder entity = selector.getClientEntity(context.getSource());
+
+                                    ClientCommandUtil.sendFeedback(context.getSource(), uuidCommand(entity));
+                                    return 0;
+                                }))
+        ));
+    }
+
+    protected abstract void registerCommands(Consumer<CommandDispatcher<CommandSourceStack>> registerer);
+
+    protected abstract void registerClientCommands(Consumer<CommandDispatcher<ClientSuggestionProvider>> registerer);
+
+    protected abstract LiteralArgumentBuilder<ClientSuggestionProvider> clientLiteral(String literal);
+
+    protected abstract <T> RequiredArgumentBuilder<ClientSuggestionProvider, ?> clientArgument(String name, ArgumentType<T> type);
 
     private Component uuidCommand(UUIDHolder uuid) {
         Tag uuidNbt = UUIDUtil.CODEC.encodeStart(NbtOps.INSTANCE, uuid.UUIDCommand$getUUID()).getOrThrow();
