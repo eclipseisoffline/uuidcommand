@@ -1,2 +1,2 @@
-- Update to 1.21.11.
-- Remap the mod to Mojmap.
+- Update to 26.1.
+- Port to NeoForge.

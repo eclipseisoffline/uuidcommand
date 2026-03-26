@@ -6,6 +6,8 @@
 [![Discord Badge](https://img.shields.io/badge/chat-discord-%235865f2)](https://discord.gg/CNNkyWRkqm)
 [![Github Badge](https://img.shields.io/badge/github-uuidcommand-white?logo=github)](https://github.com/eclipseisoffline/uuidcommand)
 ![GitHub License](https://img.shields.io/github/license/eclipseisoffline/uuidcommand)
+![Available for Fabric](https://img.shields.io/badge/available_for-fabric-_?color=%23dbd0b4)
+![Available for NeoForge](https://img.shields.io/badge/available_for-NeoForge-_?color=%23e58c53)
 
 This mod adds a simple `/uuid` command that shows the UUID of any entity currently loaded,
 and allows you to copy the UUID string or the NBT data representation of the UUID.
@@ -20,12 +22,13 @@ This mod is licensed under GNU LGPLv3.
 
 | Minecraft Version | Status       |
 |-------------------|--------------|
-| 1.21.11           | ✅ Current    |
+| 26.1              | ✅ Current    |
+| 1.21.11           | ✔️ Available |
 | 1.21.9+10         | ✔️ Available |
 | 1.21.6+7+8        | ✔️ Available |
 | 1.21.5            | ✔️ Available |
 | 1.21.2            | ✔️ Available |
-| 1.21+1            | ✅ Current    |
+| 1.21+1            | ✔️ Available |
 | 1.20.5+6          | ✔️ Available |
 | 1.20.4            | ✔️ Available |
 
