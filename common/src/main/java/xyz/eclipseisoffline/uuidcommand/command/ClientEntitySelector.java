@@ -8,9 +8,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Predicate;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.multiplayer.ClientSuggestionProvider;
 import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.arguments.selector.EntitySelector;
 import net.minecraft.world.entity.Entity;
@@ -39,7 +39,7 @@ public class ClientEntitySelector extends EntitySelector {
                 ((EntitySelectorAccessor) selector).getUsesSelector());
     }
 
-    public UUIDHolder getClientEntity(ClientSuggestionProvider source) throws CommandSyntaxException {
+    public UUIDHolder getClientEntity(SharedSuggestionProvider source) throws CommandSyntaxException {
         List<UUIDHolder> list = getClientEntities(source);
         if (list.isEmpty()) {
             throw EntityArgument.NO_ENTITIES_FOUND.create();
@@ -50,7 +50,7 @@ public class ClientEntitySelector extends EntitySelector {
         return list.getFirst();
     }
 
-    public List<UUIDHolder> getClientEntities(ClientSuggestionProvider source) {
+    public List<UUIDHolder> getClientEntities(SharedSuggestionProvider source) {
         List<UUIDHolder> entities = new ArrayList<>(getUnfilteredClientEntities(source).stream()
                 .filter(entity -> entity.getType().isEnabled(source.enabledFeatures()))
                 .map(entity -> (UUIDHolder) entity)
@@ -61,7 +61,7 @@ public class ClientEntitySelector extends EntitySelector {
         return entities;
     }
 
-    private List<PlayerInfo> getClientPlayerEntries(ClientSuggestionProvider source) {
+    private List<PlayerInfo> getClientPlayerEntries(SharedSuggestionProvider source) {
         PlayerInfo player = null;
 
         if (((EntitySelectorAccessor) this).getPlayerName() != null) {
@@ -77,7 +77,7 @@ public class ClientEntitySelector extends EntitySelector {
         return Collections.emptyList();
     }
 
-    private List<? extends Entity> getUnfilteredClientEntities(ClientSuggestionProvider source) {
+    private List<? extends Entity> getUnfilteredClientEntities(SharedSuggestionProvider source) {
         // Not implemented from server side: player-only selectors
         // Discarded local world check, since localWordOnly is always true
         if (((EntitySelectorAccessor) this).getPlayerName() != null) {

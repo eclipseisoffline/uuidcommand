@@ -4,9 +4,9 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
-import net.minecraft.client.multiplayer.ClientSuggestionProvider;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.arguments.selector.EntitySelector;
 import net.minecraft.core.UUIDUtil;
@@ -22,6 +22,7 @@ import xyz.eclipseisoffline.uuidcommand.command.ClientEntitySelector;
 import java.util.function.Consumer;
 
 public abstract class UUIDCommand {
+    public static final String MOD_ID = "uuidcommand";
 
     protected void initialize() {
         registerCommands(dispatcher -> dispatcher.register(
@@ -55,11 +56,15 @@ public abstract class UUIDCommand {
 
     protected abstract void registerCommands(Consumer<CommandDispatcher<CommandSourceStack>> registerer);
 
-    protected abstract void registerClientCommands(Consumer<CommandDispatcher<ClientSuggestionProvider>> registerer);
+    protected abstract void registerClientCommands(Consumer<CommandDispatcher<SharedSuggestionProvider>> registerer);
 
-    protected abstract LiteralArgumentBuilder<ClientSuggestionProvider> clientLiteral(String literal);
+    private LiteralArgumentBuilder<SharedSuggestionProvider> clientLiteral(String literal) {
+        return LiteralArgumentBuilder.literal(literal);
+    }
 
-    protected abstract <T> RequiredArgumentBuilder<ClientSuggestionProvider, ?> clientArgument(String name, ArgumentType<T> type);
+    private <T> RequiredArgumentBuilder<SharedSuggestionProvider, ?> clientArgument(String name, ArgumentType<T> type) {
+        return RequiredArgumentBuilder.argument(name, type);
+    }
 
     private Component uuidCommand(UUIDHolder uuid) {
         Tag uuidNbt = UUIDUtil.CODEC.encodeStart(NbtOps.INSTANCE, uuid.UUIDCommand$getUUID()).getOrThrow();
