@@ -1,2 +1,1 @@
-- Update to 26.1.
-- Port to NeoForge.
+- Mark 26.1.1 as supported.

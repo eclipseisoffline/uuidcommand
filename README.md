@@ -22,7 +22,7 @@ This mod is licensed under GNU LGPLv3.
 
 | Minecraft Version | Status       |
 |-------------------|--------------|
-| 26.1              | ✅ Current    |
+| 26.1.x            | ✅ Current    |
 | 1.21.11           | ✔️ Available |
 | 1.21.9+10         | ✔️ Available |
 | 1.21.6+7+8        | ✔️ Available |
@@ -36,7 +36,7 @@ This mod is licensed under GNU LGPLv3.
 
 Mod builds can be found on the releases page, as well as on [Modrinth](https://modrinth.com/mod/uuid-command).
 
-The Fabric API is required. This mod is both supported on the server and on the client:
+The Fabric API is required on Fabric. This mod is both supported on the server and on the client:
 
 - When installed on the server, any OP-ed players are able to use the `/uuid` command, even if they don't have the mod installed client side.
 - When installed on the client, you can use the `/uuid` command in single- and multiplayer, even if you don't have OP permissions.
