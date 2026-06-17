@@ -14,7 +14,7 @@ import java.util.Objects;
 public interface ClientCommandUtil {
 
     static void sendFeedback(SharedSuggestionProvider suggestionProvider, Component message) {
-        getMinecraft(suggestionProvider).gui.getChat().addClientSystemMessage(message);
+        getMinecraft(suggestionProvider).gui.hud.getChat().addClientSystemMessage(message);
         getMinecraft(suggestionProvider).getNarrator().saySystemChatQueued(message);
     }
 
